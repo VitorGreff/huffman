@@ -2,8 +2,6 @@ package main
 
 import (
 	"flag"
-	filehandler "huffman/fileHandler"
-	"huffman/frequency"
 	"huffman/huff"
 	"log"
 )
@@ -15,8 +13,20 @@ func main() {
 	flag.StringVar(&outputFileName, "o", "input/test.txt", "output file path")
 	flag.Parse()
 
-	_, content := filehandler.ReadFile(inputFileName)
-	m := frequency.BuildFrequencyMap(content)
-	tree := huff.BuildTree(m)
-	log.Println(tree)
+	// _, content := filehandler.ReadFile(inputFileName)
+	// m := frequency.BuildFrequencyMap(content)
+	m := map[string]int{
+		"C": 32,
+		"D": 42,
+		"E": 120,
+		"K": 7,
+		"L": 42,
+		"M": 24,
+		"U": 37,
+		"Z": 2,
+	}
+	t := huff.BuildTree(m)
+	huff.PrintTree(t)
+	p := huff.BuildPrefixTable(t, "", map[string]string{})
+	log.Println(p)
 }
