@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	filehandler "huffman/fileHandler"
+	"huffman/frequency"
+	"huffman/huff"
 	"log"
 )
 
@@ -14,5 +16,7 @@ func main() {
 	flag.Parse()
 
 	_, content := filehandler.ReadFile(inputFileName)
-	log.Println(string(content))
+	m := frequency.BuildFrequencyMap(content)
+	tree := huff.BuildTree(m)
+	log.Println(tree)
 }
