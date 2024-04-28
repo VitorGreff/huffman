@@ -2,21 +2,23 @@ package main
 
 import (
 	"flag"
+	"fmt"
+
 	filehandler "huffman/fileHandler"
+	"huffman/frequency"
 	"huffman/huff"
-	"log"
 )
 
 func main() {
 	var inputFileName string
 	var outputFileName string
 	flag.StringVar(&inputFileName, "i", "input/input.txt", "input file path")
-	flag.StringVar(&outputFileName, "o", "output/test.txt", "output file path")
+	flag.StringVar(&outputFileName, "o", "output/output.txt", "output file path")
 	flag.Parse()
 
-	// _, content := filehandler.ReadFile(inputFileName)
-	// m := frequency.BuildFrequencyMap(content)
-	m := map[string]int{
+	content := filehandler.ReadFile(inputFileName)
+	m := frequency.BuildFrequencyMap(content)
+	/* m := map[string]int{
 		"C": 32,
 		"D": 42,
 		"E": 120,
@@ -25,12 +27,18 @@ func main() {
 		"M": 24,
 		"U": 37,
 		"Z": 2,
-	}
+	} */
 	t := huff.BuildTree(m)
-	huff.PrintTree(t)
 	p := huff.BuildPrefixTable(t, "", map[string]string{})
-	log.Println(p)
+
+	// ENCODE TO STORE
+	encodedContent := huff.EncodeText(t, content)
 	filehandler.WriteHeader(p, outputFileName)
-	log.Println(filehandler.ReadHeader(outputFileName))
-	log.Println(huff.DecodePrefixCode(t, "111100"))
+	filehandler.WriteEncodedString(outputFileName, encodedContent)
+
+	// DECODE TO LOG
+	header, filePrefixCode := filehandler.ReadEncodedFile(outputFileName)
+	fmt.Printf("\nPrefix Table -> %v\n", header)
+	fmt.Printf("\nEncoded Content -> %s\n", filePrefixCode)
+	fmt.Printf("\nDecoded Content -> %s\n", huff.DecodePrefixCode(t, filePrefixCode))
 }

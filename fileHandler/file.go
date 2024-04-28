@@ -4,21 +4,22 @@ import (
 	"encoding/gob"
 	"io"
 	"os"
+	"strings"
 )
 
-func ReadFile(filename string) []byte {
+func ReadFile(filename string) string {
 	file, err := os.Open(filename)
 	if err != nil {
-		return []byte{}
+		return ""
 	}
 	defer file.Close()
 
 	content, err := io.ReadAll(file)
 	if err != nil {
-		return []byte{}
+		return ""
 	}
 
-	return content
+	return string(content)
 }
 
 func WriteHeader(prefixTable map[string]string, filename string) {
@@ -33,21 +34,50 @@ func WriteHeader(prefixTable map[string]string, filename string) {
 	if err != nil {
 		panic(err)
 	}
+
+	_, err = file.WriteString("\nHEADER DELIMITER")
+	if err != nil {
+		panic(err)
+	}
+
 }
 
-func ReadHeader(filename string) map[string]string {
+func ReadEncodedFile(filename string) (map[string]string, string) {
 	file, err := os.Open(filename)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	dec := gob.NewDecoder(file)
+	content, err := io.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+
+	sliceContent := strings.Split(string(content), "HEADER DELIMITER")
+
 	var p map[string]string
+	// reads the header
+	dec := gob.NewDecoder(strings.NewReader(sliceContent[0]))
 	err = dec.Decode(&p)
 	if err != nil {
 		panic(err)
 	}
 
-	return p
+	prefixCode := sliceContent[1]
+
+	return p, prefixCode
+}
+
+func WriteEncodedString(filename string, prefixCode string) {
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	_, err = file.WriteString("\n" + prefixCode)
+	if err != nil {
+		panic(err)
+	}
 }

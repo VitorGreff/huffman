@@ -48,6 +48,16 @@ func DecodePrefixCode(t Tree, prefix string) string {
 	return decodedString
 }
 
+func EncodeText(t Tree, text string) string {
+	var code string
+	m := BuildPrefixTable(t, "", map[string]string{})
+
+	for _, char := range text {
+		code += m[string(char)]
+	}
+	return code
+}
+
 func PrintTree(t Tree) {
 	if t.Root == nil {
 		return
