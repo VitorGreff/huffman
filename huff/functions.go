@@ -28,6 +28,26 @@ func BuildTree(m map[string]int) Tree {
 	return tmp3
 }
 
+func DecodePrefixCode(t Tree, prefix string) string {
+	var decodedString string
+	node := t.Root
+
+	for _, char := range prefix {
+
+		switch string(char) {
+		case "1":
+			node = node.(InternalNode).Right
+		case "0":
+			node = node.(InternalNode).Left
+		}
+		if node.IsLeaf() {
+			decodedString += node.(LeafNode).Element
+			node = t.Root
+		}
+	}
+	return decodedString
+}
+
 func PrintTree(t Tree) {
 	if t.Root == nil {
 		return

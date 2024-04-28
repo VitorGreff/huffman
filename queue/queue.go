@@ -13,7 +13,6 @@ func (q *Queue[T]) Dequeue() T {
 		var z T
 		return z
 	}
-
 	item := q.Items[0]
 	q.Items = q.Items[1:]
 	return item

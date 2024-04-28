@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	filehandler "huffman/fileHandler"
 	"huffman/huff"
 	"log"
 )
@@ -10,7 +11,7 @@ func main() {
 	var inputFileName string
 	var outputFileName string
 	flag.StringVar(&inputFileName, "i", "input/input.txt", "input file path")
-	flag.StringVar(&outputFileName, "o", "input/test.txt", "output file path")
+	flag.StringVar(&outputFileName, "o", "output/test.txt", "output file path")
 	flag.Parse()
 
 	// _, content := filehandler.ReadFile(inputFileName)
@@ -29,4 +30,7 @@ func main() {
 	huff.PrintTree(t)
 	p := huff.BuildPrefixTable(t, "", map[string]string{})
 	log.Println(p)
+	filehandler.WriteHeader(p, outputFileName)
+	log.Println(filehandler.ReadHeader(outputFileName))
+	log.Println(huff.DecodePrefixCode(t, "111100"))
 }
